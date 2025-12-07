@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Batik & Thread - Receipt</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 10px 25px;
+  background-color: #fff;
+  color: #222;
+}
+
+/* HEADER */
+.header {
+  display: grid;
+  grid-template-columns: 80px auto;
+  align-items: center;
+}
+
+.logo {
+  width: 70px;
+}
+
+.company-block {
+  text-align: center;
+  margin-right: 60px;
+}
+
+.company-block h1 {
+  font-size: 22px;
+  margin: 0;
+  font-weight: bold;
+}
+
+.company-block .details {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.divider {
+  height: 1px;
+  background: black;
+  margin: 10px 0;
+}
+
+input {
+  width: 100%;
+  padding: 4px;
+  border: 1px solid #777;
+  background: #f5f5f5;
+  font-size: 13px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 6px;
+}
+
+th, td {
+  border: 1px solid black;
+  padding: 5px;
+  font-size: 13px;
+}
+
+th {
+  background: #eaeaea;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: bold;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+
+/* SIGNATURE */
+.signature-box {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  border-top: 1px solid black;
+  padding-top: 6px;
+  width: 260px;
+}
+
+/* PRINT BUTTON */
+.print-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  font-size: 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 18px;
+}
+
+@media print {
+  .print-btn { display: none !important; }
+}
+
+.footer {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 12px;
+  font-style: italic;
+}
+</style>
+
+<script>
+// AUTH GUARD
+if (localStorage.getItem("auth") !== "true") {
+  window.location.href = "admin-login.html";
+}
+
+/* AUTO TIME */
+function updateTime() {
+  const now = new Date();
+  const formatted = now.toLocaleString();
+  document.getElementById("timeStamp").innerText = formatted;
+}
+updateTime();
+
+/* CALCULATIONS */
+function calcRow(n) {
+  let q = parseFloat(document.getElementById("qty"+n).value) || 0;
+  let p = parseFloat(document.getElementById("price"+n).value) || 0;
+  document.getElementById("total"+n).value = (q * p).toFixed(2);
+  calcTotals();
+}
+
+function calcTotals() {
+  let subtotal = 0;
+  for (let i = 1; i <= 4; i++) {
+    subtotal += parseFloat(document.getElementById("total"+i).value) || 0;
+  }
+  document.getElementById("subtotal").value = subtotal.toFixed(2);
+
+  let taxPercent = parseFloat(document.getElementById("taxPercent").value) || 0;
+  let taxAmount = subtotal * (taxPercent / 100);
+  document.getElementById("taxAmount").value = taxAmount.toFixed(2);
+
+  document.getElementById("grandTotal").value = (subtotal + taxAmount).toFixed(2);
+}
+</script>
+
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <img src="logo.jpg" class="logo">
+  <div class="company-block">
+    <h1>Batik & Thread</h1>
+    <div class="details">
+      2672 Dust Cir, Kissimmee, FL 34744<br>
+      Phone: 321-961-6566
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- CUSTOMER INFO -->
+<div class="section-title">Customer Information</div>
+<table>
+  <tr><td>Name:</td><td><input></td></tr>
+  <tr><td>Phone:</td><td><input></td></tr>
+  <tr><td>Address:</td><td><input></td></tr>
+</table>
+
+<!-- ITEMS -->
+<div class="section-title">Items</div>
+<table>
+  <thead>
+    <tr>
+      <th>Description</th>
+      <th style="width:60px;">Qty</th>
+      <th style="width:100px;">Unit Price</th>
+      <th style="width:100px;">Total</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr>
+      <td><input id="desc1"></td>
+      <td><input id="qty1" oninput="calcRow(1)"></td>
+      <td><input id="price1" oninput="calcRow(1)"></td>
+      <td><input id="total1" readonly></td>
+    </tr>
+    <tr>
+      <td><input id="desc2"></td>
+      <td><input id="qty2" oninput="calcRow(2)"></td>
+      <td><input id="price2" oninput="calcRow(2)"></td>
+      <td><input id="total2" readonly></td>
+    </tr>
+    <tr>
+      <td><input id="desc3"></td>
+      <td><input id="qty3" oninput="calcRow(3)"></td>
+      <td><input id="price3" oninput="calcRow(3)"></td>
+      <td><input id="total3" readonly></td>
+    </tr>
+    <tr>
+      <td><input id="desc4"></td>
+      <td><input id="qty4" oninput="calcRow(4)"></td>
+      <td><input id="price4" oninput="calcRow(4)"></td>
+      <td><input id="total4" readonly></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- SUMMARY -->
+<div class="section-title">Summary</div>
+<table>
+  <tr><td>Subtotal:</td><td><input id="subtotal" readonly></td></tr>
+  <tr><td>Tax %:</td><td><input id="taxPercent" oninput="calcTotals()"></td></tr>
+  <tr><td>Tax $:</td><td><input id="taxAmount" readonly></td></tr>
+  <tr><td>Total Amount:</td><td><input id="grandTotal" readonly></td></tr>
+</table>
+
+<!-- SIGNATURE -->
+<div class="signature-box">
+  Batik & Thread<br>
+  Time: <span id="timeStamp"></span>
+</div>
+
+<!-- PRINT -->
+<button class="print-btn" onclick="window.print()">Print Receipt</button>
+
+<p class="footer">Thank you for shopping with Batik & Thread!</p>
+
+</body>
+</html>
