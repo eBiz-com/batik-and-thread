@@ -76,16 +76,6 @@ th {
   margin-bottom: 4px;
 }
 
-/* SIGNATURE */
-.signature-box {
-  margin-top: 10px;
-  font-size: 14px;
-  font-weight: bold;
-  border-top: 1px solid black;
-  padding-top: 6px;
-  width: 260px;
-}
-
 /* PRINT BUTTON */
 .print-btn {
   background-color: #28a745;
@@ -116,34 +106,30 @@ if (localStorage.getItem("auth") !== "true") {
   window.location.href = "admin-login.html";
 }
 
-/* AUTO TIME */
-function updateTime() {
-  const now = new Date();
-  const formatted = now.toLocaleString();
-  document.getElementById("timeStamp").innerText = formatted;
-}
-updateTime();
-
-/* CALCULATIONS */
+/* ITEM ROW CALC */
 function calcRow(n) {
-  let q = parseFloat(document.getElementById("qty"+n).value) || 0;
-  let p = parseFloat(document.getElementById("price"+n).value) || 0;
-  document.getElementById("total"+n).value = (q * p).toFixed(2);
+  let q = parseFloat(document.getElementById("qty" + n).value) || 0;
+  let p = parseFloat(document.getElementById("price" + n).value) || 0;
+  document.getElementById("total" + n).value = (q * p).toFixed(2);
   calcTotals();
 }
 
+/* TOTALS (Shipping Actual - NOT taxable) */
 function calcTotals() {
   let subtotal = 0;
   for (let i = 1; i <= 4; i++) {
-    subtotal += parseFloat(document.getElementById("total"+i).value) || 0;
+    subtotal += parseFloat(document.getElementById("total" + i).value) || 0;
   }
   document.getElementById("subtotal").value = subtotal.toFixed(2);
+
+  let shipping = parseFloat(document.getElementById("shipping").value) || 0;
 
   let taxPercent = parseFloat(document.getElementById("taxPercent").value) || 0;
   let taxAmount = subtotal * (taxPercent / 100);
   document.getElementById("taxAmount").value = taxAmount.toFixed(2);
 
-  document.getElementById("grandTotal").value = (subtotal + taxAmount).toFixed(2);
+  let grandTotal = subtotal + taxAmount + shipping;
+  document.getElementById("grandTotal").value = grandTotal.toFixed(2);
 }
 </script>
 
@@ -184,7 +170,6 @@ function calcTotals() {
       <th style="width:100px;">Total</th>
     </tr>
   </thead>
-
   <tbody>
     <tr>
       <td><input id="desc1"></td>
@@ -217,14 +202,14 @@ function calcTotals() {
 <div class="section-title">Summary</div>
 <table>
   <tr><td>Subtotal:</td><td><input id="subtotal" readonly></td></tr>
+  <tr><td>Shipping (Actual):</td><td><input id="shipping" oninput="calcTotals()"></td></tr>
   <tr><td>Tax %:</td><td><input id="taxPercent" oninput="calcTotals()"></td></tr>
   <tr><td>Tax $:</td><td><input id="taxAmount" readonly></td></tr>
-  <tr><td>Total Amount:</td><td><input id="grandTotal" readonly></td></tr>
+  <tr><td><strong>Total Amount:</strong></td><td><input id="grandTotal" readonly></td></tr>
 </table>
 
-<!-- SIGNATURE -->
+<!-- NOTICE -->
 <p style="text-align:center;">Please keep this receipt for your records.</p>
-
 
 <!-- PRINT -->
 <button class="print-btn" onclick="window.print()">Print Receipt</button>
@@ -233,6 +218,8 @@ function calcTotals() {
 
 </body>
 </html>
+
+
 
 
 
